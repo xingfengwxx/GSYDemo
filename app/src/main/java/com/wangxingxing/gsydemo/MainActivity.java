@@ -15,6 +15,17 @@ import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoView;
+import com.wangxingxing.gsydemo.db.ObjectBox;
+import com.wangxingxing.gsydemo.db.table.Favorite;
+import com.wangxingxing.gsydemo.db.table.History;
+import com.wangxingxing.gsydemo.db.table.Video;
+import com.wangxingxing.gsydemo.db.table.Video_;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import io.objectbox.Box;
 
 public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> {
 
@@ -46,7 +57,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
             detailPlayer.requestFocus();
         });
 
-
+        testDB();
     }
 
     @Override
@@ -88,25 +99,36 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         return false;
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        LogUtils.i("kyeCode=" + keyCode + ", keyEvent=" + event);
-//        switch (keyCode) {
-//            case KeyEvent.KEYCODE_DPAD_CENTER:
-//                LogUtils.i("currentState=" + detailPlayer.getCurrentState());
-//                LogUtils.i("isPlaying=" + detailPlayer.isInPlayingState());
-//                if (detailPlayer.isInPlayingState()) {
-//                    GSYVideoManager.onPause();
-////                    isPlaying = false;
-//                    detailPlayer.onVideoPause();
-//                } else {
-//                    GSYVideoManager.onResume();
-////                    isPlaying = true;
-//                    detailPlayer.onVideoResume();
-//                }
-//
-//                break;
+    public void testDB() {
+        Box<Video> box = ObjectBox.get().boxFor(Video.class);
+
+//        for (int i = 0; i < 10; i++) {
+//            if (i < 5) {
+//                History history = new History();
+//                Video video = new Video(0, "video" + i, new Date());
+//                video.history.setTarget(history);
+//                box.put(video);
+//            } else {
+//                Favorite favorite = new Favorite();
+//                Video video = new Video(0, "video" + i, new Date());
+//                video.favorite.setTarget(favorite);
+//                box.put(video);
+//            }
 //        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+
+        Box<Favorite> boxFav = ObjectBox.get().boxFor(Favorite.class);
+        LogUtils.i("fav list: \n");
+        long ids[] = new long[boxFav.getAll().size()];
+        for (int j = 0; j < boxFav.getAll().size(); j++) {
+            LogUtils.i(boxFav.getAll().get(j).toString());
+            ids[j] = boxFav.getAll().get(j).id;
+        }
+
+        List<Video> favVideos = new ArrayList<>();
+        for (int m = 0; m < boxFav.getAll().size(); m++) {
+            Video fav = box.query().equal(Video_.favoriteId, boxFav.getAll().get(m).id).build().findUnique();
+            favVideos.add(fav);
+            LogUtils.i(fav.toString());
+        }
+    }
 }

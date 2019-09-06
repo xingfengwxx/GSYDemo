@@ -6,6 +6,7 @@ import android.util.Log;
 import com.blankj.utilcode.util.CrashUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
+import com.wangxingxing.gsydemo.db.ObjectBox;
 
 public class App extends Application {
 
@@ -18,5 +19,7 @@ public class App extends Application {
         Utils.init(this);
         LogUtils.getConfig().setGlobalTag(TAG);
         CrashUtils.init((crashInfo, e) -> Log.e(TAG, crashInfo));
+
+        ObjectBox.init(this);
     }
 }
