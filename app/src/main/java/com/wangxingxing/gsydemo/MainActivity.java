@@ -3,15 +3,20 @@ package com.wangxingxing.gsydemo;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.shuyu.gsyvideoplayer.GSYBaseActivityDetail;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
+import com.shuyu.gsyvideoplayer.player.PlayerFactory;
+import com.shuyu.gsyvideoplayer.player.SystemPlayerManager;
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoView;
@@ -34,6 +39,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     private String url = "https://cdn-7.haku88.com/hls/2019/08/10/itkJnN7A/playlist.m3u8";
     private String videoUrl = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
     private boolean isPlaying = true;
+    private XuanjiPop mXuanjiPop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +48,10 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 
         detailPlayer = findViewById(R.id.detail_player);
         btnFullScreen = findViewById(R.id.btn_full_screen);
+
+//        GSYVideoType.enableMediaCodec();
         //增加title
-        detailPlayer.getTitleTextView().setVisibility(View.GONE);
+//        detailPlayer.getTitleTextView().setVisibility(View.GONE);
 //        detailPlayer.getBackButton().setVisibility(View.GONE);
 
         initVideoBuilderMode();
@@ -52,12 +60,28 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 
         btnFullScreen.setOnClickListener(v -> {
             LogUtils.i("进入全屏模式");
-            detailPlayer.startWindowFullscreen(MainActivity.this, false, false);
+            //会导致部分盒子黑屏，有声音无图像
+//            detailPlayer.startWindowFullscreen(MainActivity.this, false, false);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getGSYVideoPlayer().getLayoutParams( );
+            lp.leftMargin = 0;
+            lp.topMargin = 0;
+            lp.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            lp.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            getGSYVideoPlayer().setLayoutParams(lp);
+
             btnFullScreen.setVisibility(View.GONE);
             detailPlayer.requestFocus();
         });
 
         testDB();
+
+//        mXuanjiPop = new XuanjiPop(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        PlayerFactory.setPlayManager(SystemPlayerManager.class);
     }
 
     @Override
@@ -79,7 +103,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         return new GSYVideoOptionBuilder()
                 .setThumbImageView(imageView)
                 .setUrl(videoUrl)
-                .setCacheWithPlay(true)
+                .setCacheWithPlay(false)
                 .setVideoTitle(" ")
                 .setIsTouchWiget(true)
                 .setRotateViewAuto(false)
@@ -93,6 +117,18 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     public void clickForFullScreen() {
 
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+//                mXuanjiPop.showAtLocation(detailPlayer, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
 
     @Override
     public boolean getDetailOrientationRotateAuto() {

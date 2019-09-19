@@ -129,4 +129,11 @@
         android:layout_marginBottom="30dp"
         android:visibility="gone" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"
+        android:layout_gravity="center"
+        android:text="获取焦点"/>
+
 </FrameLayout>

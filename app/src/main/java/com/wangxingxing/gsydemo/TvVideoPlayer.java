@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.LogUtils;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
+import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
 
 /**
@@ -405,7 +406,6 @@ public class TvVideoPlayer extends StandardGSYVideoPlayer {
         }
 
     }
-
 
     @Override
     protected void dismissProgressDialog() {
