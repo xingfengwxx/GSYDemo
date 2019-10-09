@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.LogUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
@@ -54,12 +55,15 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
         btnFull.setOnClickListener(v -> {
             LogUtils.i("全屏播放");
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams( );
-            lp.leftMargin = 0;
-            lp.topMargin = 0;
-            lp.width = FrameLayout.LayoutParams.MATCH_PARENT;
-            lp.height = FrameLayout.LayoutParams.MATCH_PARENT;
-            surfaceView.setLayoutParams(lp);
+//            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams( );
+//            lp.leftMargin = 0;
+//            lp.topMargin = 0;
+//            lp.width = FrameLayout.LayoutParams.MATCH_PARENT;
+//            lp.height = FrameLayout.LayoutParams.MATCH_PARENT;
+//            surfaceView.setLayoutParams(lp);
+
+//            mediaPlayer.seekTo(500000);
+            seekToCustom(500000);
         });
 
         btnFull.setOnFocusChangeListener((v, hasFocus) -> {
@@ -179,7 +183,18 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-        changeVideoSize(width, height);
+//        changeVideoSize(width, height);
+    }
+
+    private void seekToCustom(int position) {
+        try {
+            Class clazz = Class.forName("android.media.MediaPlayer");
+            Method method = clazz.getMethod("seekTo", int.class);
+            method.setAccessible(true);
+            method.invoke(mediaPlayer, position);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // SurfaceView的callBack

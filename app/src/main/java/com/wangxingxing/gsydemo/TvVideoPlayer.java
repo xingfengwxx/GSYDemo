@@ -250,8 +250,8 @@ public class TvVideoPlayer extends StandardGSYVideoPlayer {
             touchSurfaceMove(moveX - pointX, 0, pointY);
             mBottomContainer.setVisibility(VISIBLE);
             //设置无效
-            //onProgressChanged(mProgressBar, mSeekTimePosition * 100 / getDuration(), true);
-            mProgressBar.setProgress(mSeekTimePosition * 100 / getDuration());
+            onProgressChanged(mProgressBar, mSeekTimePosition * 100 / getDuration(), true);
+//            mProgressBar.setProgress(mSeekTimePosition * 100 / getDuration());
         }
     }
 

@@ -2,6 +2,7 @@ package com.wangxingxing.gsydemo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -26,6 +27,7 @@ import com.wangxingxing.gsydemo.db.table.History;
 import com.wangxingxing.gsydemo.db.table.Video;
 import com.wangxingxing.gsydemo.db.table.Video_;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +58,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 
         initVideoBuilderMode();
 
+//        detailPlayer.setSeekOnStart(500000);
         detailPlayer.startPlayLogic();
 
         btnFullScreen.setOnClickListener(v -> {
@@ -71,6 +74,8 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 
             btnFullScreen.setVisibility(View.GONE);
             detailPlayer.requestFocus();
+
+//            getGSYVideoPlayer().seekTo(800000);
         });
 
         testDB();
@@ -102,7 +107,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         //loadCover(imageView, url);
         return new GSYVideoOptionBuilder()
                 .setThumbImageView(imageView)
-                .setUrl(videoUrl)
+                .setUrl(url)
                 .setCacheWithPlay(false)
                 .setVideoTitle(" ")
                 .setIsTouchWiget(true)
@@ -111,6 +116,12 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
                 .setShowFullAnimation(false)//打开动画
                 .setNeedLockFull(true)
                 .setSeekRatio(1);
+    }
+
+    @Override
+    public void onPrepared(String url, Object... objects) {
+        super.onPrepared(url, objects);
+//        getGSYVideoPlayer().seekTo(36829);
     }
 
     @Override
@@ -167,4 +178,19 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
             LogUtils.i(fav.toString());
         }
     }
+
+    private void seekToCustom(int position) {
+        try {
+            Class clazz = Class.forName("android.media.MediaPlayer");
+//            Method method = clazz.getMethod("seekTo", int.class);
+//            method.setAccessible(true);
+//            method.invoke(null, position);
+            Object obj = clazz.newInstance();
+            MediaPlayer mediaPlayer = (MediaPlayer) obj;
+            mediaPlayer.seekTo(position);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
