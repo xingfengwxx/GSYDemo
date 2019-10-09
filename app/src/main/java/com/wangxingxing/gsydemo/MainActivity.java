@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -40,6 +41,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     private Button btnFullScreen;
     private String url = "https://cdn-7.haku88.com/hls/2019/08/10/itkJnN7A/playlist.m3u8";
     private String videoUrl = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
+    private String stxzUrl = "http://cn4.ruioushang.com/hls/20190919/1600e0a10aea9da6b8481421e3fe669d/1568875804/index.m3u8";
     private boolean isPlaying = true;
     private XuanjiPop mXuanjiPop;
 
@@ -59,6 +61,12 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         initVideoBuilderMode();
 
 //        detailPlayer.setSeekOnStart(500000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                detailPlayer.startPlayLogic();
+//            }
+//        }, 1000);
         detailPlayer.startPlayLogic();
 
         btnFullScreen.setOnClickListener(v -> {
@@ -87,6 +95,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     protected void onStart() {
         super.onStart();
         PlayerFactory.setPlayManager(SystemPlayerManager.class);
+        GSYVideoType.setRenderType(GSYVideoType.SUFRACE);
     }
 
     @Override
@@ -107,7 +116,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         //loadCover(imageView, url);
         return new GSYVideoOptionBuilder()
                 .setThumbImageView(imageView)
-                .setUrl(url)
+                .setUrl(stxzUrl)
                 .setCacheWithPlay(false)
                 .setVideoTitle(" ")
                 .setIsTouchWiget(true)
@@ -121,7 +130,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     @Override
     public void onPrepared(String url, Object... objects) {
         super.onPrepared(url, objects);
-//        getGSYVideoPlayer().seekTo(36829);
+        getGSYVideoPlayer().seekTo(800000);
     }
 
     @Override
@@ -139,7 +148,13 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         return super.onKeyDown(keyCode, event);
     }
 
-
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        getGSYVideoPlayer().setVideoAllCallBack(null);
+//        GSYVideoManager.releaseAllVideos();
+//        LogUtils.d("onBackPressed");
+//    }
 
     @Override
     public boolean getDetailOrientationRotateAuto() {

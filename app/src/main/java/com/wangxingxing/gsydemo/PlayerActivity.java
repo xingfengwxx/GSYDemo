@@ -26,14 +26,17 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnBufferingUpdateListener,
-        MediaPlayer.OnVideoSizeChangedListener {
+        MediaPlayer.OnVideoSizeChangedListener,
+        MediaPlayer.OnInfoListener{
 
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer;
     private Button btnFull;
 
-    private String url = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
+    private String url = "https://cdn-7.haku88.com/hls/2019/08/10/itkJnN7A/playlist.m3u8";
+    private String videoUrl = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
+    private String stxzUrl = "http://cn4.ruioushang.com/hls/20190919/1600e0a10aea9da6b8481421e3fe669d/1568875804/index.m3u8";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +58,15 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
         btnFull.setOnClickListener(v -> {
             LogUtils.i("全屏播放");
-//            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams( );
-//            lp.leftMargin = 0;
-//            lp.topMargin = 0;
-//            lp.width = FrameLayout.LayoutParams.MATCH_PARENT;
-//            lp.height = FrameLayout.LayoutParams.MATCH_PARENT;
-//            surfaceView.setLayoutParams(lp);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) surfaceView.getLayoutParams( );
+            lp.leftMargin = 0;
+            lp.topMargin = 0;
+            lp.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            lp.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            surfaceView.setLayoutParams(lp);
 
 //            mediaPlayer.seekTo(500000);
-            seekToCustom(500000);
+//            seekToCustom(500000);
         });
 
         btnFull.setOnFocusChangeListener((v, hasFocus) -> {
@@ -94,7 +97,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         // 设置缓存变化监听
         mediaPlayer.setOnBufferingUpdateListener(this);
         mediaPlayer.setOnVideoSizeChangedListener(this);
-        Uri uri = Uri.parse(url);
+        mediaPlayer.setOnInfoListener(this);
+        Uri uri = Uri.parse(stxzUrl);
         try {
             // mediaPlayer.reset();
             mediaPlayer.setDataSource(PlayerActivity.this, uri);
@@ -145,6 +149,12 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
     }
 
     @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        LogUtils.d("what=" + what + ", extra=" + extra);
+        return false;
+    }
+
+    @Override
     public void onPrepared(MediaPlayer mp) {
         // 当视频加载完毕以后，隐藏加载进度条
 //        progressBar.setVisibility(View.GONE);
@@ -161,6 +171,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         // 设置surfaceView保持在屏幕上
         mediaPlayer.setScreenOnWhilePlaying(true);
         surfaceHolder.setKeepScreenOn(true);
+        mediaPlayer.seekTo(800000);
         // 设置控制条,放在加载完成以后设置，防止获取getDuration()错误
 //        seekBar.setProgress(0);
 //        seekBar.setMax(mediaPlayer.getDuration());
