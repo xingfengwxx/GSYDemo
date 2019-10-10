@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,6 +18,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.shuyu.gsyvideoplayer.GSYBaseActivityDetail;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
+import com.shuyu.gsyvideoplayer.listener.GSYMediaPlayerListener;
 import com.shuyu.gsyvideoplayer.player.PlayerFactory;
 import com.shuyu.gsyvideoplayer.player.SystemPlayerManager;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
@@ -35,15 +38,18 @@ import java.util.List;
 
 import io.objectbox.Box;
 
-public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> {
+public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> implements GSYMediaPlayerListener {
 
     private TvVideoPlayer detailPlayer;
     private Button btnFullScreen;
     private String url = "https://cdn-7.haku88.com/hls/2019/08/10/itkJnN7A/playlist.m3u8";
     private String videoUrl = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
     private String stxzUrl = "http://cn4.ruioushang.com/hls/20190919/1600e0a10aea9da6b8481421e3fe669d/1568875804/index.m3u8";
+    private String stxzKKUrl = "http://jingcai.cdn-vipkkyun.com/20190918/4288_ab869b76/index.m3u8#HD1080P粤语";
     private boolean isPlaying = true;
     private XuanjiPop mXuanjiPop;
+
+    public static final int SEEK_TO_HISTORY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 //                detailPlayer.startPlayLogic();
 //            }
 //        }, 1000);
+//        getGSYVideoPlayer().seekTo(800000);
         detailPlayer.startPlayLogic();
 
         btnFullScreen.setOnClickListener(v -> {
@@ -88,7 +95,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
 
         testDB();
 
-//        mXuanjiPop = new XuanjiPop(this);
+//        getGSYVideoPlayer().getGSYVideoManager().setListener(this);
     }
 
     @Override
@@ -116,7 +123,7 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         //loadCover(imageView, url);
         return new GSYVideoOptionBuilder()
                 .setThumbImageView(imageView)
-                .setUrl(stxzUrl)
+                .setUrl(stxzKKUrl)
                 .setCacheWithPlay(false)
                 .setVideoTitle(" ")
                 .setIsTouchWiget(true)
@@ -130,7 +137,10 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
     @Override
     public void onPrepared(String url, Object... objects) {
         super.onPrepared(url, objects);
-        getGSYVideoPlayer().seekTo(800000);
+        LogUtils.i("isPlaying=" + GSYVideoManager.instance().isPlaying());
+//        getGSYVideoPlayer().seekTo(800000);
+        mHandler.sendEmptyMessageDelayed(SEEK_TO_HISTORY, 5000);
+//        checkPlaying();
     }
 
     @Override
@@ -208,4 +218,101 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         }
     }
 
+    private void checkPlaying() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                for (int i = 0; i < 10; i++) {
+                    try {
+                        boolean isPlaying = GSYVideoManager.instance().isPlaying();
+                        LogUtils.i("isPlaying=" + isPlaying);
+                        if (isPlaying) {
+                            mHandler.sendEmptyMessage(SEEK_TO_HISTORY);
+                            return;
+                        }
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+    }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SEEK_TO_HISTORY:
+                    getGSYVideoPlayer().seekTo(800000);
+                    LogUtils.i("isPlaying=" + GSYVideoManager.instance().isPlaying());
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onPrepared() {
+        LogUtils.d("onPrepared");
+//        GSYVideoManager.instance().start();
+//        GSYVideoManager.instance().seekTo(800000);
+    }
+
+    @Override
+    public void onAutoCompletion() {
+
+    }
+
+    @Override
+    public void onCompletion() {
+
+    }
+
+    @Override
+    public void onBufferingUpdate(int percent) {
+
+    }
+
+    @Override
+    public void onSeekComplete() {
+
+    }
+
+    @Override
+    public void onError(int what, int extra) {
+
+    }
+
+    @Override
+    public void onInfo(int what, int extra) {
+        LogUtils.i("what=" + what + ", extra=" + extra);
+    }
+
+    @Override
+    public void onVideoSizeChanged() {
+
+    }
+
+    @Override
+    public void onBackFullscreen() {
+
+    }
+
+    @Override
+    public void onVideoPause() {
+
+    }
+
+    @Override
+    public void onVideoResume() {
+
+    }
+
+    @Override
+    public void onVideoResume(boolean seek) {
+
+    }
 }

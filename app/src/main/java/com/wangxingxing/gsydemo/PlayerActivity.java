@@ -37,6 +37,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
     private String url = "https://cdn-7.haku88.com/hls/2019/08/10/itkJnN7A/playlist.m3u8";
     private String videoUrl = "https://baidu.com-l-baidu.com/20190817/14650_5960339e/index.m3u8";
     private String stxzUrl = "http://cn4.ruioushang.com/hls/20190919/1600e0a10aea9da6b8481421e3fe669d/1568875804/index.m3u8";
+    private String stxzKKUrl = "http://jingcai.cdn-vipkkyun.com/20190918/4288_ab869b76/index.m3u8#HD1080P粤语";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +99,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         mediaPlayer.setOnBufferingUpdateListener(this);
         mediaPlayer.setOnVideoSizeChangedListener(this);
         mediaPlayer.setOnInfoListener(this);
-        Uri uri = Uri.parse(stxzUrl);
+        Uri uri = Uri.parse(stxzKKUrl);
         try {
             // mediaPlayer.reset();
             mediaPlayer.setDataSource(PlayerActivity.this, uri);
