@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.shuyu.gsyvideoplayer.GSYBaseActivityDetail;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
@@ -30,6 +31,10 @@ import com.wangxingxing.gsydemo.db.table.Favorite;
 import com.wangxingxing.gsydemo.db.table.History;
 import com.wangxingxing.gsydemo.db.table.Video;
 import com.wangxingxing.gsydemo.db.table.Video_;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -103,6 +108,13 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         super.onStart();
         PlayerFactory.setPlayManager(SystemPlayerManager.class);
         GSYVideoType.setRenderType(GSYVideoType.SUFRACE);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -259,6 +271,22 @@ public class MainActivity extends GSYBaseActivityDetail<StandardGSYVideoPlayer> 
         LogUtils.d("onPrepared");
 //        GSYVideoManager.instance().start();
 //        GSYVideoManager.instance().seekTo(800000);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMsgEvent(MsgEvent event) {
+        ToastUtils.showLong(event.msg);
+        LogUtils.d(event.msg);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onInfoEvent(InfoEvent event) {
+        switch (event.what) {
+            case 901:
+                //处理小米电视加载进度条一直不消失的问题
+                getGSYVideoPlayer().findViewById(R.id.loading).setVisibility(View.GONE);
+                break;
+        }
     }
 
     @Override

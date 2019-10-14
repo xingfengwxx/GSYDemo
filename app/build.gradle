@@ -16,10 +16,26 @@ android {
             abiFilters 'armeabi', 'armeabi-v7a', 'x86'
         }
     }
+
+    signingConfigs {
+        releaseSign {
+            keyAlias 'aishang.keystore'
+            keyPassword 'rswzjq!@#$'
+            storeFile file('D:/aishangKey/aishang.keystore')
+            storePassword 'rswzjq!@#$'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources false
+            zipAlignEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseSign
+        }
+        debug {
+            signingConfig signingConfigs.releaseSign
         }
     }
 
@@ -51,6 +67,9 @@ dependencies {
     implementation "io.objectbox:objectbox-kotlin:$objectbox_version"
     debugImplementation "io.objectbox:objectbox-android-objectbrowser:$objectbox_version"
     releaseImplementation "io.objectbox:objectbox-android:$objectbox_version"
+
+    //EventBus
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }
 
 // apply the plugin after the dependencies block

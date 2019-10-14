@@ -3,6 +3,7 @@ package com.wangxingxing.gsydemo;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -22,9 +23,12 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
+import com.shuyu.gsyvideoplayer.utils.Debuger;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  继承自CustomGSYVideoPlayer,主要用于Android盒子，实现了用遥控器控制
@@ -405,6 +409,27 @@ public class TvVideoPlayer extends StandardGSYVideoPlayer {
             }
         }
 
+    }
+
+    @Override
+    public void onPrepared() {
+        super.onPrepared();
+//        LogUtils.d("onPrepared");
+        EventBus.getDefault().post(new MsgEvent("onPrepared"));
+    }
+
+    @Override
+    public void onInfo(int what, int extra) {
+        super.onInfo(what, extra);
+//        EventBus.getDefault().post(new MsgEvent("onInfo: what=" + what + ", extra=" + extra));
+        EventBus.getDefault().post(new MsgEvent("onInfo: what=" + what + ", extra=" + extra));
+        EventBus.getDefault().post(new InfoEvent(what, extra));
+    }
+
+    @Override
+    public void onError(int what, int extra) {
+        super.onError(what, extra);
+        EventBus.getDefault().post(new MsgEvent("onError: what=" + what + ", extra=" + extra));
     }
 
     @Override
